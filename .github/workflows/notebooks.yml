@@ -1,0 +1,48 @@
+# Executes every notebook top to bottom so a broken cell fails the build.
+name: Notebooks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  execute:
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        notebook:
+          - 01-refactoring-variables.ipynb
+          - 02-refactoring-functions.ipynb
+          - 03-object-oriented-programming.ipynb
+          - 04-pydantic.ipynb
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v8.1.0
+        with:
+          enable-cache: true
+
+      - name: Install Python
+        run: uv python install 3.13
+
+      - name: Install dependencies
+        run: uv sync --locked
+
+      # Executed copies go to a scratch folder so the committed notebooks stay untouched.
+      - name: Execute ${{ matrix.notebook }}
+        run: >
+          uv run --with nbconvert jupyter nbconvert
+          --to notebook --execute
+          --ExecutePreprocessor.kernel_name=python3
+          --output-dir "$RUNNER_TEMP/executed"
+          "${{ matrix.notebook }}"
