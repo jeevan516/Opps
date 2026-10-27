@@ -27,6 +27,8 @@ By the end of this repository, you should be able to:
 | [**data**](data/) | Dataset used across the notebooks. |
 | [**pyproject.toml**](pyproject.toml) | Project configuration and dependencies. |
 | [**uv.lock**](uv.lock) | Dependency lock file. |
+| [**Dockerfile**](Dockerfile) | Image with the locked dependencies and JupyterLab. |
+| [**docker-compose.yaml**](docker-compose.yaml) | Runs JupyterLab, or checks every notebook with the `check` service. |
 
 ## Setup
 
@@ -97,6 +99,43 @@ code .
 ```
 
 Then open a notebook and select the Python environment created by `uv sync` as the kernel.
+
+> [!TIP]
+> If PowerShell reports that `uv` is not recognized right after installing or upgrading it, the terminal still has its old `PATH`. Open a new terminal (restart VS Code if it is a VS Code terminal), or reload `PATH` in the current one:
+>
+> ```powershell
+> $env:Path = [Environment]::GetEnvironmentVariable('Path','Machine') + ';' + [Environment]::GetEnvironmentVariable('Path','User')
+> ```
+
+## Run With Docker
+
+Docker Compose can run JupyterLab and check the notebooks without installing Python locally.
+
+### 1. Create the Configuration
+
+```bash
+cp .env.example .env
+```
+
+Replace `change-me` in `.env` with your own random token. It works as the password for the Jupyter server.
+
+### 2. Start JupyterLab
+
+```bash
+docker compose up -d --build --wait
+```
+
+Open `http://127.0.0.1:8888/lab?token=<your-token>`. The project folder is mounted into the container, so notebook changes are saved to your files. The server only accepts connections from your own machine. If port 8888 is already in use, set `JUPYTER_PORT` in `.env`.
+
+Stop it with `docker compose down`.
+
+### 3. Check Every Notebook
+
+This runs each notebook from top to bottom inside a container, like the CI workflow, and fails if any cell raises an error:
+
+```bash
+docker compose run --rm check
+```
 
 ## References & Further Reading
 

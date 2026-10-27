@@ -14,3 +14,7 @@ dev = [
     "ipykernel>=7.3.0",
     "ipython>=9.16.1",
 ]
+notebook = [
+    "jupyterlab>=4.6.4",
+    "nbconvert>=7.17.2",
+]

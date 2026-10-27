@@ -1,0 +1,42 @@
+name: mle-refactoring-and-oop
+
+services:
+  # JupyterLab for working through the notebooks in the browser.
+  jupyter:
+    build: .
+    environment:
+      # Required: the token is the password for the Jupyter server.
+      JUPYTER_TOKEN: ${JUPYTER_TOKEN:?Set JUPYTER_TOKEN in .env (see .env.example)}
+    ports:
+      # Bound to localhost only, so the server is not reachable from the network.
+      - "127.0.0.1:${JUPYTER_PORT:-8888}:8888"
+    volumes:
+      # Mount the project so notebook edits are saved to your files.
+      - .:/app
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - import urllib.request; urllib.request.urlopen('http://localhost:8888/api', timeout=2)
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
+
+  # Runs every notebook top to bottom and exits; a failing cell fails the run.
+  # Start it with: docker compose run --rm check
+  check:
+    build: .
+    profiles: ["check"]
+    command:
+      - sh
+      - -c
+      - >
+        jupyter nbconvert --to notebook --execute
+        --ExecutePreprocessor.kernel_name=python3
+        --output-dir /tmp/executed
+        01-refactoring-variables.ipynb
+        02-refactoring-functions.ipynb
+        03-object-oriented-programming.ipynb
+        04-pydantic.ipynb

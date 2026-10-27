@@ -1,0 +1,8 @@
+# The image needs the locked dependencies, the notebooks and their data.
+**
+!pyproject.toml
+!uv.lock
+!.python-version
+!*.ipynb
+!data/
+!assets/
