@@ -34,7 +34,11 @@ and validated data models, without changing what the code does.
 | Exercises completed | **20** across 4 notebooks (7 + 9 + 2 + 2) |
 | CI "Notebooks" workflow, last run (27 Oct 2026) | **4 / 4 notebooks executed without errors** (GitHub Actions, run log) |
 | CI history | 2 runs, both passed |
-| Notebook outputs in the repo | not recorded: committed notebooks have no saved outputs |
+| Notebooks executed locally with saved outputs (15 Nov 2026, same nbconvert command as CI, `python3` kernel) | **4 / 4 ran top to bottom, 0 error cells** |
+| Notebook 01: refactored loan summary | `Total loan amount for December: 7200`; price helper prints `117.60` after tax and discount |
+| Notebook 02: one `train_model` helper for 3 models | Decision tree, random forest and Gaussian NB each score **100.0%** accuracy, same as the copy-pasted "bad example" (test split is only 6 of 30 rows, so this shows the refactor kept behaviour, not model quality) |
+| Notebook 03: `BankAccount` with fee subclass | $100.00 → $150.00 after a $50 deposit → **$128.50** after a $20 withdrawal + $1.50 fee; overdraft raises `Insufficient funds to cover withdrawal and fee` |
+| Notebook 04: Pydantic models | bad input to the constrained model caught as **7 validation errors**; invalid `Person` (name over 50 chars, age under 18, bad email) caught as **3 validation errors**; valid `Person` created |
 | Automated tests (pytest) | none in the repo; the CI notebook run is the only check |
 
 ## Future engineering
@@ -49,3 +53,4 @@ and validated data models, without changing what the code does.
 - 23 Oct 2026: refactoring and Pydantic exercises completed; GitHub Actions notebook CI added.
 - 27 Oct 2026: Dockerfile, Docker Compose (JupyterLab + notebook check) and README run guide added.
 - 15 Nov 2026: project notes created.
+- 15 Nov 2026: executed all 4 notebooks in place (same nbconvert command as CI) so outputs are saved in the repo; results added above.
