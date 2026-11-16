@@ -1,6 +1,6 @@
 # Clean Code, OOP & Pydantic: project notes
 
-_Last updated: 15 Nov 2026_
+_Last updated: 16 Nov 2026_
 
 ## Project
 **Clean Code, OOP & Pydantic.** Hard-to-read Python is costly to maintain. The goal was to
@@ -54,3 +54,4 @@ and validated data models, without changing what the code does.
 - 27 Oct 2026: Dockerfile, Docker Compose (JupyterLab + notebook check) and README run guide added.
 - 15 Nov 2026: project notes created.
 - 15 Nov 2026: executed all 4 notebooks in place (same nbconvert command as CI) so outputs are saved in the repo; results added above.
+- 16 Nov 2026: presentation deck added: presentation/clean-code-oop-pydantic.pptx (9 slides).
