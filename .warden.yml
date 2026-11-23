@@ -1,0 +1,1 @@
+test_cmd: uv run --with pytest --with nbclient --with ipykernel pytest -q
