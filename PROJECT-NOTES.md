@@ -1,6 +1,6 @@
 # Clean Code, OOP & Pydantic: project notes
 
-_Last updated: 16 Nov 2026_
+_Last updated: 23 Nov 2026_
 
 ## Project
 **Clean Code, OOP & Pydantic.** Hard-to-read Python is costly to maintain. The goal was to
@@ -27,6 +27,12 @@ and validated data models, without changing what the code does.
 5. **CI:** a GitHub Actions workflow runs all four notebooks top to bottom on every push and PR.
 6. **Docker:** a Dockerfile (locked dependencies, non-root user) and Compose file with a
    JupyterLab service (localhost only, token from `.env`) and a `check` service that runs every notebook.
+7. **Exercise markers closed:** the 18 `# @TODO:` markers in notebooks 01, 02 and 04 were renamed to
+   `# Done:` (each exercise was already solved below its marker), so the TODO scanner is clean.
+8. **Tests:** the solved Pydantic models and refactored functions are mirrored in an importable
+   `exercises/` package (`models.py`, `functions.py`); `tests/` holds pytest unit tests for them plus a
+   smoke test that executes all four notebooks with nbclient. `.warden.yml` records the test command:
+   `uv run --with pytest --with nbclient --with ipykernel pytest -q`.
 
 ## Results
 | Check | Result |
@@ -34,15 +40,18 @@ and validated data models, without changing what the code does.
 | Exercises completed | **20** across 4 notebooks (7 + 9 + 2 + 2) |
 | CI "Notebooks" workflow, last run (27 Oct 2026) | **4 / 4 notebooks executed without errors** (GitHub Actions, run log) |
 | CI history | 2 runs, both passed |
-| Notebooks executed locally with saved outputs (15 Nov 2026, same nbconvert command as CI, `python3` kernel) | **4 / 4 ran top to bottom, 0 error cells** |
+| Notebooks executed locally with saved outputs (23 Nov 2026, nbconvert `--execute --inplace`, `python3` kernel) | **4 / 4 ran top to bottom, 0 error cells** |
+| Automated tests (pytest, 23 Nov 2026) | **18 passed** in about 10 s: 5 notebook smoke tests (4 notebooks + discovery check), 7 Pydantic model tests, 6 function tests |
+| Open TODO markers | **0** (18 closed) |
 | Notebook 01: refactored loan summary | `Total loan amount for December: 7200`; price helper prints `117.60` after tax and discount |
-| Notebook 02: one `train_model` helper for 3 models | Decision tree, random forest and Gaussian NB each score **100.0%** accuracy, same as the copy-pasted "bad example" (test split is only 6 of 30 rows, so this shows the refactor kept behaviour, not model quality) |
+| Notebook 02: one `train_and_score` helper for 3 models | 23 Nov run: bad example 100.0 / 100.0 / 100.0 %; refactored helper 83.33 / 100.0 / 100.0 % (decision tree / random forest / Gaussian NB). The test split is only 6 of 30 rows and the tree and forest have no `random_state`, so one misclassified row (83.33%) can appear from run to run; this shows the refactor kept behaviour, not model quality |
 | Notebook 03: `BankAccount` with fee subclass | $100.00 → $150.00 after a $50 deposit → **$128.50** after a $20 withdrawal + $1.50 fee; overdraft raises `Insufficient funds to cover withdrawal and fee` |
 | Notebook 04: Pydantic models | bad input to the constrained model caught as **7 validation errors**; invalid `Person` (name over 50 chars, age under 18, bad email) caught as **3 validation errors**; valid `Person` created |
-| Automated tests (pytest) | none in the repo; the CI notebook run is the only check |
 
 ## Future engineering
-- Move the `BankAccount`, `Person` and model-training helpers into a `src/` package with pytest tests.
+- Make the notebooks import from the `exercises/` package instead of repeating the code, so there is one copy; add `BankAccount` (notebook 03) to it with tests.
+- Run the pytest suite in the GitHub Actions workflow (today CI only executes the notebooks).
+- Fix `random_state` on the decision tree and random forest in notebook 02 so accuracies are reproducible.
 - Add a linter and formatter (ruff) to CI so style rules are checked, not only that cells run.
 - Add type checking (mypy or ty) now that the refactored code has type hints.
 - Apply the same refactoring steps to a larger, real notebook (done later in the King County project).
@@ -55,3 +64,4 @@ and validated data models, without changing what the code does.
 - 15 Nov 2026: project notes created.
 - 15 Nov 2026: executed all 4 notebooks in place (same nbconvert command as CI) so outputs are saved in the repo; results added above.
 - 16 Nov 2026: presentation deck added: presentation/clean-code-oop-pydantic.pptx (9 slides).
+- 23 Nov 2026: closed all 18 `@TODO` exercise markers (renamed to `Done:`), re-executed the 4 notebooks, added `exercises/` package, pytest suite (18 passed) and `.warden.yml`.
