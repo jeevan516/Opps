@@ -1,0 +1,51 @@
+# Portainer stack: JupyterLab for the Opps notebooks (clean code, OOP, Pydantic).
+# Portainer -> Stacks -> Add stack -> Name: opps-jupyter -> Web editor (or Upload).
+#
+# It builds nothing: it runs the image built locally. Build it first in a terminal:
+#   cd C:\Projects\Opps ; docker compose build
+# (that command tags the image mle-refactoring-and-oop-jupyter:latest)
+#
+# Set these under "Environment variables" in Portainer
+# (or "Load variables from .env file": C:\Projects\Opps\.env):
+#   JUPYTER_TOKEN  required, the Jupyter login password
+#   JUPYTER_PORT   host port (default 8888)
+#   PROJECTS_DIR   required, folder holding your projects, e.g. C:/Projects
+#
+# Opens at: http://localhost:8888/lab  (enter the JUPYTER_TOKEN)
+# The "check" service only runs on demand (profile "check"); the stack does not start it.
+
+services:
+  jupyter:
+    image: mle-refactoring-and-oop-jupyter:latest
+    environment:
+      JUPYTER_TOKEN: ${JUPYTER_TOKEN:?Set JUPYTER_TOKEN}
+    ports:
+      - "127.0.0.1:${JUPYTER_PORT:-8888}:8888"
+    volumes:
+      # The project, so notebook edits are saved to your files.
+      - ${PROJECTS_DIR:?set PROJECTS_DIR, e.g. C:/Projects}/Opps:/app
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - import urllib.request; urllib.request.urlopen('http://localhost:8888/api', timeout=2)
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
+
+  check:
+    image: mle-refactoring-and-oop-jupyter:latest
+    profiles: ["check"]
+    command:
+      - sh
+      - -c
+      - >
+        jupyter nbconvert --to notebook --execute
+        --ExecutePreprocessor.kernel_name=python3
+        --output-dir /tmp/executed
+        01-refactoring-variables.ipynb
+        02-refactoring-functions.ipynb
+        03-object-oriented-programming.ipynb
+        04-pydantic.ipynb
