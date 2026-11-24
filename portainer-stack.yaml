@@ -17,6 +17,7 @@
 services:
   jupyter:
     image: mle-refactoring-and-oop-jupyter:latest
+    pull_policy: never  # built on this PC (build-images.ps1); never pulled
     environment:
       JUPYTER_TOKEN: ${JUPYTER_TOKEN:?Set JUPYTER_TOKEN}
     ports:
@@ -37,6 +38,7 @@ services:
 
   check:
     image: mle-refactoring-and-oop-jupyter:latest
+    pull_policy: never  # built on this PC (build-images.ps1); never pulled
     profiles: ["check"]
     command:
       - sh
