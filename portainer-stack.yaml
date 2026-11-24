@@ -9,7 +9,7 @@
 # (or "Load variables from .env file": C:\Projects\Opps\.env):
 #   JUPYTER_TOKEN  required, the Jupyter login password
 #   JUPYTER_PORT   host port (default 8888)
-#   PROJECTS_DIR   required, folder holding your projects, e.g. C:/Projects
+#   PROJECTS_DIR   optional, folder holding your projects (default C:/Projects), e.g. C:/Projects
 #
 # Opens at: http://localhost:8888/lab  (enter the JUPYTER_TOKEN)
 # The "check" service only runs on demand (profile "check"); the stack does not start it.
@@ -23,7 +23,7 @@ services:
       - "127.0.0.1:${JUPYTER_PORT:-8888}:8888"
     volumes:
       # The project, so notebook edits are saved to your files.
-      - ${PROJECTS_DIR:?set PROJECTS_DIR, e.g. C:/Projects}/Opps:/app
+      - ${PROJECTS_DIR:-C:/Projects}/Opps:/app
     healthcheck:
       test:
         - CMD
